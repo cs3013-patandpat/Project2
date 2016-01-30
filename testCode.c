@@ -5,8 +5,24 @@
 unsigned long **sys_call_table;
 asmlinkage long (*ref_sys_cs3013_syscall1)(void);
 
+//Read
 asmlinkage long new_sys_cs3013_syscall1(void) {
-  printk(KERN_INFO "\"’Hello world?!’ More like ’Goodbye, world!’ EXTERMINATE!\" -- Dalek");
+	
+	
+  return 0;
+}
+
+//Open
+asmlinkage long new_sys_cs3013_syscall1(void) {
+	
+	
+  return 0;
+}
+
+//Close
+asmlinkage long new_sys_cs3013_syscall1(void) {
+	
+	
   return 0;
 }
 
@@ -15,7 +31,7 @@ static unsigned long **find_sys_call_table(void) {
   unsigned long **sct;
   while (offset < ULLONG_MAX) {
     sct = (unsigned long **)offset;
-    1if (sct[__NR_close] == (unsigned long *) sys_close) {
+    if (sct[__NR_close] == (unsigned long *) sys_close) {
       printk(KERN_INFO "Interceptor: Found syscall table at address: 0x%02lX",
 	     (unsigned long) sct);
       return sct;
@@ -61,7 +77,7 @@ static int __init interceptor_start(void) {
   /* Replace the existing system calls */
   disable_page_protection();
   sys_call_table[__NR_cs3013_syscall1] = (unsigned long *)new_sys_cs3013_syscall1;
-  2enable_page_protection();
+  enable_page_protection();
   /* And indicate the load was successful */
   printk(KERN_INFO "Loaded interceptor!");
   return 0;
