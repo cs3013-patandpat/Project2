@@ -23,7 +23,6 @@ local_time = (u32)(time.tv_sec - (sys_tz.tz_minuteswest * 60));
 rtc_time_to_tm(local_time, &tm);
 
 printk(KERN_INFO "(%02d %02d %02d:%02d:%02d) team kernel: [] User  is opening file: %s\n", tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec, filename);
-sys_call_table[__NR_open](filename);
 
   return 0;
 }
@@ -31,15 +30,7 @@ sys_call_table[__NR_open](filename);
 //Close
 asmlinkage long new_sys_cs3013_syscall3(const char* filename) {
 	
-struct timeval time;
-unsigned long local_time;
-do_gettimeofday(&time);
-local_time = (u32)(time.tv_sec - (sys_tz.tz_minuteswest * 60));
-rtc_time_to_tm(local_time, &tm);
-
-printk(KERN_INFO "(%02d %02d %02d:%02d:%02d) team kernel: [] User  is closing file: %s\n", tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec, filename);
-sys_call_table[__NR_close](filename);
-
+	
   return 0;
 }
 
