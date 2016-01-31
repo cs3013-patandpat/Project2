@@ -22,8 +22,8 @@ asmlinkage long new_sys_cs3013_syscall1(unsigned int fd, char __user *buf, size_
 	int index = 0;
 	do {
 		memcpy(buffer,&buf[index],5);
-	} while(strcmp(buffer),"VIRUS")!=0 && count > index+5);
-	if(strcmp(buffer,"VIRUS") != NULL){
+	} while(strcmp(buffer,"VIRUS")!=0 && count > index+5);
+	if(strcmp(buffer,"VIRUS") != 0){
 		struct timeval time;
 		unsigned long local_time;
 		do_gettimeofday(&time);
