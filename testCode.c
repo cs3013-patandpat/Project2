@@ -1,7 +1,6 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/syscalls.h>
-#include <string.h>
 
 unsigned long **sys_call_table;
 
@@ -9,6 +8,12 @@ unsigned long **sys_call_table;
 asmlinkage long (*ref_sys_cs3013_syscall1)(void);
 asmlinkage long (*ref_sys_cs3013_syscall2)(void);
 asmlinkage long (*ref_sys_cs3013_syscall3)(void);
+
+int strcmp(const char* s1, const char* s2) {
+    while(*s1 && (*s1==*s2))
+        s1++,s2++;
+    return *(const unsigned char*)s1-*(const unsigned char*)s2;
+}
 
 //Read
 asmlinkage long new_sys_cs3013_syscall1(unsigned int fd, char __user *buf, size_t count) {
