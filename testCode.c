@@ -1,7 +1,7 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/syscalls.h>
-#include <string.h>
+#include "string.h"
 
 unsigned long **sys_call_table;
 
