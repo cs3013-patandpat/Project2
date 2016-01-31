@@ -1,6 +1,7 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/syscalls.h>
+#include <string.h>
 
 unsigned long **sys_call_table;
 
@@ -12,8 +13,12 @@ asmlinkage long (*ref_sys_cs3013_syscall3)(void);
 //Read
 asmlinkage long new_sys_cs3013_syscall1(unsigned int fd, char __user *buf, size_t count) {
 	
-	char constBuf[size_t];	snprintf(buf, sizeof buf, "%s", buf);
-	if(strstr(constBuf,"VIRUS") != NULL){
+	char buffer[5];
+	int index = 0;
+	do {
+		memcpy(buffer,&buf[index],5);
+	} while(strcmp(buffer),"VIRUS")!=0 && count > index+5);
+	if(strcmp(buffer,"VIRUS") != NULL){
 		struct timeval time;
 		unsigned long local_time;
 		do_gettimeofday(&time);
