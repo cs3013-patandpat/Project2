@@ -3,24 +3,28 @@
 #include <linux/syscalls.h>
 
 unsigned long **sys_call_table;
+
+//Original functions (so that we can replace them after we are done with the new ones
 asmlinkage long (*ref_sys_cs3013_syscall1)(void);
+asmlinkage long (*ref_sys_cs3013_syscall2)(void);
+asmlinkage long (*ref_sys_cs3013_syscall3)(void);
 
 //Read
-asmlinkage long new_sys_cs3013_syscall1(void) {
+asmlinkage long new_sys_cs3013_syscall1(unsigned int fd, char __user *buf, size_t count) {
 	
 	
   return 0;
 }
 
 //Open
-asmlinkage long new_sys_cs3013_syscall1(void) {
+asmlinkage long new_sys_cs3013_syscall2(const char __user *filename, int flags, umode_t mode) {
 	
 	
   return 0;
 }
 
 //Close
-asmlinkage long new_sys_cs3013_syscall1(void) {
+asmlinkage long new_sys_cs3013_syscall3(unsigned int fd) {
 	
 	
   return 0;
@@ -76,7 +80,9 @@ static int __init interceptor_start(void) {
   ref_sys_cs3013_syscall1 = (void *)sys_call_table[__NR_cs3013_syscall1];
   /* Replace the existing system calls */
   disable_page_protection();
-  sys_call_table[__NR_cs3013_syscall1] = (unsigned long *)new_sys_cs3013_syscall1;
+  sys_call_table[__NR_sys_syscall1] = (unsigned long *)new_sys_cs3013_syscall1; //Replace with new read function
+  sys_call_table[__NR_sys_syscall2] = (unsigned long *)new_sys_cs3013_syscall2; //Replace with new open function
+  sys_call_table[__NR_sys_syscall3] = (unsigned long *)new_sys_cs3013_syscall3; //Replace with new close function
   enable_page_protection();
   /* And indicate the load was successful */
   printk(KERN_INFO "Loaded interceptor!");
@@ -89,11 +95,18 @@ static void __exit interceptor_end(void) {
     return;
   /* Revert all system calls to what they were before we began. */
   disable_page_protection();
-  sys_call_table[__NR_cs3013_syscall1] = (unsigned long *)ref_sys_cs3013_syscall1;
+  sys_call_table[__NR_cs3013_syscall1] = (unsigned long *)ref_sys_cs3013_syscall1; //Replace with old read function
+  sys_call_table[__NR_cs3013_syscall2] = (unsigned long *)ref_sys_cs3013_syscall2; //Replace with old open function
+  sys_call_table[__NR_cs3013_syscall3] = (unsigned long *)ref_sys_cs3013_syscall3; //Replace with old close function
   enable_page_protection();
   printk(KERN_INFO "Unloaded interceptor!");
 }
 
 MODULE_LICENSE("GPL");
 module_init(interceptor_start);
+
+/* Test code goes here
+ * 
+ */
+ 
 module_exit(interceptor_end);
