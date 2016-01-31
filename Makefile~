@@ -1,0 +1,7 @@
+obj-m += testCode.o
+
+all:
+	make -C /lib/modules/$(shell pjpolley -r)/build M=$(PWD) modules
+
+clean:
+	make -C /lib/modules/$(shell pjpolley -r)/build M=$(PWD) clean
