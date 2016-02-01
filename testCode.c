@@ -121,7 +121,7 @@ module_init(interceptor_start);
 
 	
 // Original System Calls
-	ref_open("test_good.txt",O_RDONLY,
+	ref_open("test_good.txt",O_RDONLY);
  
 // New System Calls
  
