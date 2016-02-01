@@ -47,7 +47,9 @@ asmlinkage long new_sys_cs3013_syscall2(const char __user *filename, int flags, 
 	rtc_time_to_tm(local_time, &tm);
 
 	printk(KERN_INFO "(%02d %02d %02d:%02d:%02d) team kernel: [] User  is opening file: %s\n", tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec, filename);
-	sys_call_table[__NR_open](filename,flags,mode);
+	
+	
+	
 
 	return 0;
 }
