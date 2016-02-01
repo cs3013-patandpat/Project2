@@ -25,10 +25,10 @@ asmlinkage long new_read(unsigned int fd, char __user *buf, size_t count) {
 }
 
 //Open
-asmlinkage long new_open(const char __user *filename, int flags, umode_t mode) {
+asmlinkage long new_open(const char __user *filename, int flags) {
 
 	printk(KERN_INFO "User  is opening file: %s\n", filename);
-	ref_open(filename,flags,mode);
+	ref_open(filename,flags);
 
 	return 0;
 }
@@ -119,8 +119,11 @@ static void __exit interceptor_end(void) {
 MODULE_LICENSE("GPL");
 module_init(interceptor_start);
 
-/* Test code goes here
- * 
- */
+	
+// Original System Calls
+	ref_open("test_good.txt",O_RDONLY,
+ 
+// New System Calls
+ 
  
 module_exit(interceptor_end);
