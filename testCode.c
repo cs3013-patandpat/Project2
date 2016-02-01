@@ -5,66 +5,39 @@
 unsigned long **sys_call_table;
 
 //Original functions (so that we can replace them after we are done with the new ones
-asmlinkage long (*ref_sys_cs3013_syscall1)(void);
-asmlinkage long (*ref_sys_cs3013_syscall2)(void);
-asmlinkage long (*ref_sys_cs3013_syscall3)(void);
-
-int strcmp(const char* s1, const char* s2) {
-    while(*s1 && (*s1==*s2))
-        s1++,s2++;
-    return *(const unsigned char*)s1-*(const unsigned char*)s2;
-}
+asmlinkage long (*ref_read)(unsigned int fd, char __user *buf, size_t count);
+asmlinkage long (*ref_open)(const char __user *filename, int flags, umode_t mode);
+asmlinkage long (*ref_close)(unsigned int fd);
 
 //Read
-asmlinkage long new_sys_cs3013_syscall1(unsigned int fd, char __user *buf, size_t count) {
-	
+asmlinkage long new_read(unsigned int fd, char __user *buf, size_t count) {
 	char buffer[5];
 	int index = 0;
 	do {
-		memcpy(buffer,&buf[index],5);
+	memcpy(buffer,&buf[index],5);
 	} while(strcmp(buffer,"VIRUS")!=0 && count > index+5);
 	if(strcmp(buffer,"VIRUS") != 0){
-		struct timeval time;
-		unsigned long local_time;
-		do_gettimeofday(&time);
-		local_time = (u32)(time.tv_sec - (sys_tz.tz_minuteswest * 60));
-		rtc_time_to_tm(local_time, &tm);
-		
-		printk(KERN_INFO "(%02d %02d %02d:%02d:%02d) team kernel: [] User  read from file descriptor, but that read contained malicious code!\n", tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+		printk(KERN_INFO "User read from file descriptor , but that read contained malicious code!\n");
 	}
-	sys_call_table[__NR_read](fd,buf,count);
+	ref_read(fd,buf,count);
 	
   return 0;
 }
 
 //Open
-asmlinkage long new_sys_cs3013_syscall2(const char __user *filename, int flags, umode_t mode) {
+asmlinkage long new_open(const char __user *filename, int flags, umode_t mode) {
 
-	struct timeval time;
-	unsigned long local_time;
-	do_gettimeofday(&time);
-	local_time = (u32)(time.tv_sec - (sys_tz.tz_minuteswest * 60));
-	rtc_time_to_tm(local_time, &tm);
-
-	printk(KERN_INFO "(%02d %02d %02d:%02d:%02d) team kernel: [] User  is opening file: %s\n", tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec, filename);
-	
-	
-	
+	printk(KERN_INFO "User  is opening file: %s\n", filename);
+	ref_open(filename,flags,mode);
 
 	return 0;
 }
 
 //Close
-asmlinkage long new_sys_cs3013_syscall3(unsigned int fd) {
-	
-	struct timeval time;
-	unsigned long local_time;
-	do_gettimeofday(&time);
-	local_time = (u32)(time.tv_sec - (sys_tz.tz_minuteswest * 60));
-	rtc_time_to_tm(local_time, &tm);
+asmlinkage long new_close(unsigned int fd) {
 
-	printk(KERN_INFO "(%02d %02d %02d:%02d:%02d) team kernel: [] User  is closing file: %d\n", tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec, fd);
-	sys_call_table[__NR_close](fd);
+	printk(KERN_INFO "User  is closing file: %d\n", fd);
+	ref_close(fd);
 
 	return 0;
 }
@@ -116,14 +89,14 @@ static int __init interceptor_start(void) {
     return -1;
   }
   /* Store a copy of all the existing functions */
-  ref_sys_cs3013_syscall1 = (void *)sys_call_table[__NR_cs3013_syscall1];
-  ref_sys_cs3013_syscall2 = (void *)sys_call_table[__NR_cs3013_syscall2];
-  ref_sys_cs3013_syscall3 = (void *)sys_call_table[__NR_cs3013_syscall3];
+  ref_read = (void *)sys_call_table[__NR_read];
+  ref_open = (void *)sys_call_table[__NR_open];
+  ref_close = (void *)sys_call_table[__NR_close];
   /* Replace the existing system calls */
   disable_page_protection();
-  sys_call_table[__NR_sys_syscall1] = (unsigned long *)new_sys_cs3013_syscall1; //Replace with new read function
-  sys_call_table[__NR_sys_syscall2] = (unsigned long *)new_sys_cs3013_syscall2; //Replace with new open function
-  sys_call_table[__NR_sys_syscall3] = (unsigned long *)new_sys_cs3013_syscall3; //Replace with new close function
+  sys_call_table[__NR_read] = (unsigned long *)new_read; //Replace with new read function
+  sys_call_table[__NR_open] = (unsigned long *)new_open; //Replace with new open function
+  sys_call_table[__NR_close] = (unsigned long *)new_close; //Replace with new close function
   enable_page_protection();
   /* And indicate the load was successful */
   printk(KERN_INFO "Loaded interceptor!");
@@ -136,9 +109,9 @@ static void __exit interceptor_end(void) {
     return;
   /* Revert all system calls to what they were before we began. */
   disable_page_protection();
-  sys_call_table[__NR_cs3013_syscall1] = (unsigned long *)ref_sys_cs3013_syscall1; //Replace with old read function
-  sys_call_table[__NR_cs3013_syscall2] = (unsigned long *)ref_sys_cs3013_syscall2; //Replace with old open function
-  sys_call_table[__NR_cs3013_syscall3] = (unsigned long *)ref_sys_cs3013_syscall3; //Replace with old close function
+  sys_call_table[__NR_read] = (unsigned long *)ref_read; //Replace with old read function
+  sys_call_table[__NR_open] = (unsigned long *)ref_open; //Replace with old open function
+  sys_call_table[__NR_close] = (unsigned long *)ref_close; //Replace with old close function
   enable_page_protection();
   printk(KERN_INFO "Unloaded interceptor!");
 }
