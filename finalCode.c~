@@ -11,7 +11,15 @@ asmlinkage long (*ref_close)(unsigned int fd);
 
 //Read
 asmlinkage long new_read(unsigned int fd, char __user *buf, size_t count) {
-
+	char buffer[5];
+	int index = 0;
+	do {
+	memcpy(buffer,&buf[index],5);
+	} while(strcmp(buffer,"VIRUS")!=0 && count > index+5);
+	if(strcmp(buffer,"VIRUS") != 0){
+		printk(KERN_INFO "User read from file descriptor , but that read contained malicious code!\n");
+	}
+	ref_read(fd,buf,count);
 	
   return 0;
 }
@@ -20,18 +28,14 @@ asmlinkage long new_read(unsigned int fd, char __user *buf, size_t count) {
 asmlinkage long new_open(const char __user *filename, int flags, umode_t mode) {
 
 	printk(KERN_INFO "User  is opening file: %s\n", filename);
-	ref_open(filename,flags,mode);
-
-	return 0;
+	return ref_open(filename,flags,mode);
 }
 
 //Close
 asmlinkage long new_close(unsigned int fd) {
 
 	printk(KERN_INFO "User  is closing file: %d\n", fd);
-	ref_close(fd);
-
-	return 0;
+	return ref_close(fd);
 }
 
 static unsigned long **find_sys_call_table(void) {
@@ -114,5 +118,3 @@ module_init(interceptor_start);
 /* Test code goes here
  * 
  */
- 
-module_exit(interceptor_end);
