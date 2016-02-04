@@ -1,6 +1,8 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/syscalls.h>
+#include <linux/string.h>
+#include <linux/cred.h>
 
 unsigned long **sys_call_table;
 
@@ -9,37 +11,32 @@ asmlinkage long (*ref_read)(unsigned int fd, char __user *buf, size_t count);
 asmlinkage long (*ref_open)(const char __user *filename, int flags, umode_t mode);
 asmlinkage long (*ref_close)(unsigned int fd);
 
+static int getuid(void){
+	return current_uid().val;
+}
+
 //Read
-asmlinkage long new_read(unsigned int fd, char __user *buf, size_t count) {
-	char buffer[5];
-	int index = 0;
-	do {
-	memcpy(buffer,&buf[index],5);
-	} while(strcmp(buffer,"VIRUS")!=0 && count > index+5);
-	if(strcmp(buffer,"VIRUS") != 0){
-		printk(KERN_INFO "User read from file descriptor , but that read contained malicious code!\n");
+asmlinkage long new_read(unsigned int fd, char __user *buf, size_t count){
+	int uid = getuid();
+	size_t readreturn = (*ref_read)(fd,buf,count);
+	if(readreturn >= 0){
+	if((strstr(buf, "VIRUS") != NULL) && uid >= 1000) printk(KERN_INFO "User %d read from file descriptor %d, but that read contained malicious code!\n",uid,fd);
 	}
-	ref_read(fd,buf,count);
-	
-  return 0;
+	return readreturn;
 }
 
 //Open
-asmlinkage long new_open(const char __user *filename, int flags) {
-
-	printk(KERN_INFO "User  is opening file: %s\n", filename);
-	ref_open(filename,flags);
-
-	return 0;
+asmlinkage long new_open(const char __user *filename, int flags, umode_t mode) {
+	int uid = getuid();
+	if(uid >= 1000) printk(KERN_INFO "User %d is opening file: %s\n",uid,filename);
+	return (*ref_open)(filename,flags,mode);
 }
 
 //Close
 asmlinkage long new_close(unsigned int fd) {
-
-	printk(KERN_INFO "User  is closing file: %d\n", fd);
-	ref_close(fd);
-
-	return 0;
+	int uid = getuid();
+	if(uid >= 1000) printk(KERN_INFO "User %d is closing file: %d\n",uid,fd);
+	return (*ref_close)(fd);
 }
 
 static unsigned long **find_sys_call_table(void) {
@@ -119,11 +116,8 @@ static void __exit interceptor_end(void) {
 MODULE_LICENSE("GPL");
 module_init(interceptor_start);
 
-	
-// Original System Calls
-	ref_open("test_good.txt",O_RDONLY,O_RDONLY);
- 
-// New System Calls
- 
- 
+/* Test code goes here
+ * 
+ */
+
 module_exit(interceptor_end);
