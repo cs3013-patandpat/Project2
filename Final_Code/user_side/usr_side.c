@@ -15,6 +15,11 @@ int shift2user(pid_t target, uid_t user){
 	ptr_to_uid = (pid_t*)malloc(sizeof(uid_t));
 	*ptr_to_pid = target;
 	current_uid = getuid();
+	
+	if(getloginuid(target)==-2){
+		printf("process id # %d could not be found. Ending process.\n",target);
+		return -1;
+	}
 
 	if(current_uid != 0){
 		printf("non-root is attempting to change user.\n Changing user of pid to 1001.\n");//if the user is not root, they can't specify what to change the uid to.
@@ -28,7 +33,6 @@ int shift2user(pid_t target, uid_t user){
 	
 	if(results == 0) printf("Success. Process # %d has had its user changed to %d.\n",target,user);
 	if(results == -2) printf("Failure. User # %d attempted to change the process uid of a different user.\n",user);
-	else printf("process id # %d could not be found. Ending process.\n",target);
 	return 0;
 }
 
