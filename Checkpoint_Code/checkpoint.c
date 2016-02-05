@@ -135,9 +135,4 @@ static void __exit interceptor_end(void) {
 
 MODULE_LICENSE("GPL");
 module_init(interceptor_start);
-
-/* Test code goes here
- * 
- */
-
 module_exit(interceptor_end);

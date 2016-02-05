@@ -29,7 +29,6 @@ To compile/execute the checkpoint module, type:
 
 	$: make
 	$: sudo insmod checkpoint.ko
-	$: sudo cs3013_syscall1
 	
 		<open test_good.txt>
 		<close test_good.txt>
