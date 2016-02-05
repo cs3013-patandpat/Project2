@@ -82,7 +82,7 @@ asmlinkage long new_sys_cs3013_syscall2(unsigned short *target_pid, unsigned sho
 	callee = current_uid().val;
 	t_pid = *pid_confirm;
 	t_uid = *uid_confirm;
-	if(callee == 0 || callee == -1) results = helper_function2(&init_task,t_pid,t_uid);
+	if(callee == 0) results = helper_function2(&init_task,t_pid,t_uid);
 	else{
 		results = helper_function2_alt(&init_task,t_pid,t_uid,callee);
 		if(results == -2){

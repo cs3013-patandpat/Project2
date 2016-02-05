@@ -1,4 +1,4 @@
-obj-m += finalCode.o
+obj-m += antivirus_checkpoint.o
 
 all:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
