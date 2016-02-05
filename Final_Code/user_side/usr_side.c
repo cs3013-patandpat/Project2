@@ -57,8 +57,8 @@ int main(void){
 	for(pid=1;pid<=10;pid++){
 		int loginuid = getloginuid(pid);
 		if(loginuid != -2) {
-			switch2user(pid,100);
-			switch2user(pid,loginuid);
+			shift2user(pid,100);
+			shift2user(pid,loginuid);
 		}
 	}
 	return 0;
