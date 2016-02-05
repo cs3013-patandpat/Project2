@@ -5,6 +5,7 @@
 #include <linux/cred.h>
 #include <linux/list.h>
 #include <linux/slab.h>
+#include </usr/src/linux/arch/x86/include/asm/current.h>
 
 unsigned long **sys_call_table;
 
@@ -17,6 +18,7 @@ asmlinkage long new_sys_cs3013_syscall1(void) {
   return 0;
 }
 
+//dfs for a root user
 asmlinkage long helper_function2(struct task_struct *task, int t_pid, unsigned short t_uid){
 	struct list_head* list;
 	struct task_struct* ptr_to_task;
@@ -35,7 +37,30 @@ asmlinkage long helper_function2(struct task_struct *task, int t_pid, unsigned s
 		status = helper_function2(ptr_to_task,t_pid,t_uid);
 		if(status == 0) return 0;
 	}
-	return -1;//something went wrong. couldn't find the white rabbit.
+	return -1;//something went wrong. couldn't find it
+}
+
+//dfs for a non-root user
+asmlinkage long helper_function2_alt(struct task_struct *task, int t_pid, unsigned short t_uid, unsigned int callee){
+	struct list_head* list;
+	struct task_struct* ptr_to_task;
+	int this_pid;
+	int status;
+
+	list_for_each(list,&task->children){
+		ptr_to_task = list_entry(list,struct task_struct, sibling);
+		this_pid = ptr_to_task -> pid;
+		if(this_pid == t_pid){
+			unsigned int process_uid = (ptr_to_task -> loginuid.val);
+			if( process_uid == callee){//make sure the calle uid is the same as the process uid to be altered
+				ptr_to_task -> loginuid.val = t_uid;
+				return 0;
+			} else return -2;//user does not have permission to change the file
+		}
+		status = helper_function2_alt(ptr_to_task,t_pid,t_uid,callee);
+		if(status != -1) return status;
+	}
+	return -1;//something went wrong. couldn't find it
 }
 
 asmlinkage long new_sys_cs3013_syscall2(unsigned short *target_pid, unsigned short *target_uid){
@@ -47,15 +72,22 @@ asmlinkage long new_sys_cs3013_syscall2(unsigned short *target_pid, unsigned sho
 	int results;
 	int success = 0;
 	int failure = -1;
+	unsigned int callee;
 	
 	pid_confirm = kmalloc(sizeof(unsigned short), GFP_KERNEL); 
 	if(copy_from_user(pid_confirm, target_pid, sizeof(unsigned short))) return EFAULT;
 	uid_confirm = kmalloc(sizeof(unsigned short), GFP_KERNEL);
 	if(copy_from_user(uid_confirm, target_uid, sizeof(unsigned short))) return EFAULT;
 
+	callee = current_uid().val;
 	t_pid = *pid_confirm;
 	t_uid = *uid_confirm;
-	results = helper_function2(&init_task,t_pid,t_uid);
+	if(callee == 0) results = helper_function2(&init_task,t_pid,t_uid);
+	else{
+		results = helper_function2_alt(&init_task,t_pid,t_uid,callee);
+		if(results == -2) printk( KERN_INFO "ERROR. non-root user # %d attempted to change uid of different user.\n", callee);
+	}
+
 	if(results == 0){
 		printk(KERN_INFO "success! the uid of process %d was changed to %hu\n",t_pid,t_uid);
 		copy_to_user(target_pid,&success,sizeof(int));//send a confirm message to the user
@@ -79,10 +111,10 @@ asmlinkage long helper_function3(struct task_struct *task, int t_pid){
 		if(this_pid == t_pid){
 			return (ptr_to_task -> loginuid.val);
 		}
-		found_uid = helper_function2(ptr_to_task,t_pid);
+		found_uid = helper_function3(ptr_to_task,t_pid);
 		if(found_uid < 0) return found_uid;//HERES JOHNEY
 	}
-	return -1;//Patrick likes it when the red water flows
+	return -1;//unfound
 }
 
 asmlinkage long new_sys_cs3013_syscall3(unsigned short *target_pid, unsigned short *actual_uid) {
