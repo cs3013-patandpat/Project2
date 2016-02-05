@@ -40,7 +40,7 @@ int main(int argc, char *argv){
 	const char *pid = argv[1];
 	const char *uid = argv[2];
 	
-	shift2user(atoi(pid),atoi(uid))
+	shift2user(atoi(pid),atoi(uid));
 	
 	return 0;
 }
