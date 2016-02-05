@@ -1,7 +1,0 @@
-runCommand: shell2.c runCommand.c shell.c
-	gcc -o shell2 shell2.c
-	gcc -o runCommand runCommand.c
-	gcc -o shell shell.c
-
-clean:
-	-rm runCommand shell shell2

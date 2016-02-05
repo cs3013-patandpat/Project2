@@ -17,7 +17,7 @@ int shift2user(pid_t target, uid_t user){
 	current_uid = getuid();
 
 	if(current_uid != 0){
-		printf("non-root is attempting to change user.\n Changing user of input to 1001.\n");//if the user is not root, they can't specify what to change the uid to.
+		printf("non-root is attempting to change user.\n Changing user of pid to 1001.\n");//if the user is not root, they can't specify what to change the uid to.
 		*ptr_to_uid = 1001;
 		results = syscall(356,ptr_to_pid,ptr_to_uid);//custom syscall #2 is numbered as 356
 	}else{
@@ -33,14 +33,26 @@ int shift2user(pid_t target, uid_t user){
 }
 
 int getloginuid(pid_t target){
+	pid_t* ptr_to_pid;
+	uid_t* ptr_to_uid;
+	long results;
+	uid_t process_usr_value;
 
+	ptr_to_pid = (pid_t*)malloc(sizeof(pid_t));
+	ptr_to_uid = (pid_t*)malloc(sizeof(uid_t));
+	*ptr_to_pid = target;
 
-
-
+	results = syscall(357,ptr_to_pid,ptr_to_uid);
+	if(results < 0){
+		printf("pid # %d could not be found.\n",target);//failure
+		return -1;
+	}
+	process_usr_value = *ptr_to_uid;
+	printf("The loginuid of process %d is %d.\n",target,process_usr_value);//success
 }
 
 int main(void){
-	return 0;
 
+	return 0;
 }
 
