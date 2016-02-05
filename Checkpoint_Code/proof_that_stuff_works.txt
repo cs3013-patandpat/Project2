@@ -1,0 +1,17 @@
+Feb  1 17:30:06 patrick-VirtualBox kernel: [  165.185071] User 1000 is opening file: /home/patrick/Desktop/Project2/finalCode.mod.c
+Feb  1 17:30:06 patrick-VirtualBox kernel: [  165.185926] User 1000 is closing file: 19
+Feb  1 17:30:06 patrick-VirtualBox kernel: [  165.186221] User 1000 is opening file: /home/patrick/Desktop/Project2/Makefile
+Feb  1 17:30:06 patrick-VirtualBox kernel: [  165.201373] User 1000 is closing file: 19
+Feb  1 17:30:06 patrick-VirtualBox kernel: [  165.202095] User 1000 is opening file: /home/patrick/Desktop/Project2/Module.symvers
+Feb  1 17:30:06 patrick-VirtualBox kernel: [  165.202663] User 1000 is closing file: 19
+Feb  1 17:30:06 patrick-VirtualBox kernel: [  165.203333] User 1000 is opening file: /home/patrick/Desktop/Project2/modules.order
+Feb  1 17:30:06 patrick-VirtualBox kernel: [  165.203842] User 1000 is closing file: 19
+Feb  1 17:30:06 patrick-VirtualBox kernel: [  165.204028] User 1000 is opening file: /home/patrick/Desktop/Project2/README.md
+Feb  1 17:30:06 patrick-VirtualBox kernel: [  165.212170] User 1000 is closing file: 19
+Feb  1 17:30:06 patrick-VirtualBox kernel: [  165.212362] User 1000 is opening file: /home/patrick/Desktop/Project2/test_bad.txt
+Feb  1 17:30:06 patrick-VirtualBox kernel: [  165.222573] User 1000 read from file descriptor 19, but that read contained malicious code!
+Feb  1 17:30:06 patrick-VirtualBox kernel: [  165.223794] User 1000 is closing file: 19
+Feb  1 17:30:06 patrick-VirtualBox kernel: [  165.224010] User 1000 is opening file: /home/patrick/Desktop/Project2/test_good.txt
+Feb  1 17:30:06 patrick-VirtualBox kernel: [  165.225869] User 1000 is closing file: 19
+Feb  1 17:30:06 patrick-VirtualBox kernel: [  165.273722] User 1000 is opening file: /usr/share/icons/Humanity/mimes/48/text-plain.svg
+Feb  1 17:30:06 patrick-VirtualBox kernel: [  165.277349] User 1000 is closing file: 19
