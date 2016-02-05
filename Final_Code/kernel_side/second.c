@@ -5,7 +5,7 @@
 #include <linux/cred.h>
 #include <linux/list.h>
 #include <linux/slab.h>
-#include </usr/src/linux/arch/x86/include/asm/current.h>
+#include <asm/current.h>
 
 unsigned long **sys_call_table;
 
