@@ -53,9 +53,9 @@ int getloginuid(pid_t target){
 }
 
 int main(void){
-	int i;
-	for(i=1;i<=10;i++){
-		int loginuid = getloginuid(target);
+	int pid;
+	for(pid=1;pid<=10;pid++){
+		int loginuid = getloginuid(pid);
 		if(loginuid != -2) {
 			switch2user(i,100);
 			switch2user(i,loginuid);
