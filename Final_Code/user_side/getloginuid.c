@@ -29,8 +29,9 @@ int main(int argc, char *argv){
 		printf("Executed command [getloginuid] improperly. Correct usage:\n");
 		printf("./getloginuid <pid>\n");
 	}
-	int pid = atoi(argv[1]);
-	getloginuid(pid);
+	
+	const char *pid = argv[1];
+	getloginuid(atoi(pid));
 	
 	return 0;
 }

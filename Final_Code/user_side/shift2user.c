@@ -37,11 +37,11 @@ int main(int argc, char *argv){
 		printf("Executed command [shift2user] improperly. Correct usage:\n");
 		printf("./shift2user <pid> <uid>");
 	}
-	int pid = atoi(argv[1]);
-	int uid = atoi(argv[2]);
+	const char *pid = argv[1];
+	const char *uid = argv[2];
 	
-	shift2user(pid,uid);
+	shift2user(atoi(pid),atoi(uid))
 	
-	return shift2user(pid,uid);
+	return 0;
 }
 
