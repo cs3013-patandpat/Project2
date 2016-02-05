@@ -1,4 +1,4 @@
-//Patrick's of the Polley and Lebold
+//Patrick Lebold and Patrick Polley 
 
 #include <stdio.h>
 #include <stdlib.h>
