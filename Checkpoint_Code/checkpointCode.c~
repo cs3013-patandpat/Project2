@@ -18,7 +18,7 @@ static int getuid(void){
 //Read
 asmlinkage long new_read(unsigned int fd, char __user *buf, size_t count){
 	int uid = getuid();
-	char null_buf[sizeof(char) + 1];
+	char null_buf[(sizeof(char) + 1];
 	size_t readreturn;
 	int i = 0;
 	(*ref_open)(buf,O_RDWR,0);
