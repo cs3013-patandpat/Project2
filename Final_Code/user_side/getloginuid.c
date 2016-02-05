@@ -24,14 +24,14 @@ int getloginuid(pid_t target){
 	return process_usr_value;
 }
 
-int main(int argc, char *argv){
+int main(int argc, char **argv){
 	if(argc !=2){
 		printf("Executed command [getloginuid] improperly. Correct usage:\n");
 		printf("./getloginuid <pid>\n");
 	}
 	
-	const char *pid = argv[1];
-	getloginuid(atoi(pid));
+	int pid = atoi(argv[1]);
+	getloginuid(pid);
 	
 	return 0;
 }

@@ -32,15 +32,16 @@ int shift2user(pid_t target, uid_t user){
 	return 0;
 }
 
-int main(int argc, char *argv){
+int main(int argc, char **argv){
 	if(argc !=3){
 		printf("Executed command [shift2user] improperly. Correct usage:\n");
 		printf("./shift2user <pid> <uid>");
 	}
-	const char *pid = argv[1];
-	const char *uid = argv[2];
 	
-	shift2user(atoi(pid),atoi(uid));
+	int pid = atoi(argv[1]);
+	int uid = atoi(argv[2]);
+	
+	shift2user(pid,uid);
 	
 	return 0;
 }
