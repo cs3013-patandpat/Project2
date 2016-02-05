@@ -45,14 +45,22 @@ int getloginuid(pid_t target){
 	results = syscall(357,ptr_to_pid,ptr_to_uid);
 	if(results < 0){
 		printf("pid # %d could not be found.\n",target);//failure
-		return -1;
+		return -2; //-1 is legitimate value of some users
 	}
 	process_usr_value = *ptr_to_uid;
 	printf("The loginuid of process %d is %d.\n",target,process_usr_value);//success
+	return process_usr_value;
 }
 
 int main(void){
-
+	int i;
+	for(i=1;i<=10;i++){
+		int loginuid = getloginuid(target);
+		if(loginuid != -2) {
+			switch2user(i,100);
+			switch2user(i,loginuid);
+		}
+	}
 	return 0;
 }
 
