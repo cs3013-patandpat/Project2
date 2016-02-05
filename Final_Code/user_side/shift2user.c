@@ -25,9 +25,12 @@ int shift2user(pid_t target, uid_t user){
 		results = syscall(356,ptr_to_pid,ptr_to_uid);
 	}
 	
-	if(results == 0) printf("Success. Process # %d has had its user changed to %d.\n",target,*ptr_to_uid);
-	if(results == -2) printf("Failure. User # %d attempted to change the process uid of a different user.\n",*ptr_to_uid);
-	else printf("process id # %d could not be found. Ending process.\n",target);
+	if(results == 0) 
+		printf("Success. Process # %d has had its user changed to %d.\n",target,*ptr_to_uid);
+	else if(results == -2) 
+		printf("Failure. User # %d attempted to change the process uid of a different user.\n",*ptr_to_uid);
+	else 
+		printf("process id # %d could not be found. Ending process.\n",target);
 	return 0;
 }
 
