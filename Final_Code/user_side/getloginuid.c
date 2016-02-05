@@ -24,7 +24,7 @@ int getloginuid(pid_t target){
 	return process_usr_value;
 }
 
-int main(int argv, char *argv){
+int main(int argc, char *argv){
 	if(argc !=2){
 		printf("Executed command [getloginuid] improperly. Correct usage:\n");
 		printf("./getloginuid <pid>\n");
