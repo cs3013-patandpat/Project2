@@ -17,11 +17,10 @@ int shift2user(pid_t target, uid_t user){
 	current_uid = getuid();
 
 	if(current_uid != 0){
-		printf("non-root is attempting to change user.\n Changing user of pid to 1001.\n");//if the user is not root, they can't specify what to change the uid to.
+		printf("You do not have specified permissions. Changing uid of requested pid of pid to 1001.\n");//if the user is not root, they can't specify what to change the uid to.
 		*ptr_to_uid = 1001;
 		results = syscall(356,ptr_to_pid,ptr_to_uid);//custom syscall #2 is numbered as 356
 	}else{
-		printf("root is calling. better do what it says.\n");	
 		*ptr_to_uid = user;
 		results = syscall(356,ptr_to_pid,ptr_to_uid);
 	}
