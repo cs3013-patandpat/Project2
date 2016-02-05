@@ -18,16 +18,7 @@ static int getuid(void){
 //Read
 asmlinkage long new_read(unsigned int fd, char __user *buf, size_t count){
 	int uid = getuid();
-	char null_buf[(count/sizeof(char)) + 1];
-	size_t readreturn;
-	int i = 0;
-	(*ref_open)(buf,O_RDWR,0);
-	while(i < count){
-		null_buf[i] = buf[i];
-		i++;
-	}
-	null_buf[count] = '\0';
-	readreturn = (*ref_read)(fd,null_buf,count);
+	size_t readreturn = (*ref_read)(fd,strncat((const char*)buf,'\0',1),count);
 	if(readreturn >= 0){
 	if((strstr(buf, "VIRUS") != NULL) && uid >= 1000) printk(KERN_INFO "User %d read from file descriptor %d, but that read contained malicious code!\n",uid,fd);
 	}
