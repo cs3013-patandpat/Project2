@@ -15,11 +15,6 @@ int shift2user(pid_t target, uid_t user){
 	ptr_to_uid = (pid_t*)malloc(sizeof(uid_t));
 	*ptr_to_pid = target;
 	current_uid = getuid();
-	
-	if(getloginuid(target)==-2){
-		printf("process id # %d could not be found. Ending process.\n",target);
-		return -1;
-	}
 
 	if(current_uid != 0){
 		printf("non-root is attempting to change user.\n Changing user of pid to 1001.\n");//if the user is not root, they can't specify what to change the uid to.
@@ -33,38 +28,20 @@ int shift2user(pid_t target, uid_t user){
 	
 	if(results == 0) printf("Success. Process # %d has had its user changed to %d.\n",target,user);
 	if(results == -2) printf("Failure. User # %d attempted to change the process uid of a different user.\n",user);
+	else printf("process id # %d could not be found. Ending process.\n",target);
 	return 0;
 }
 
-int getloginuid(pid_t target){
-	pid_t* ptr_to_pid;
-	uid_t* ptr_to_uid;
-	long results;
-	uid_t process_usr_value;
-
-	ptr_to_pid = (pid_t*)malloc(sizeof(pid_t));
-	ptr_to_uid = (pid_t*)malloc(sizeof(uid_t));
-	*ptr_to_pid = target;
-
-	results = syscall(357,ptr_to_pid,ptr_to_uid);
-	if(results < 0){
-		printf("pid # %d could not be found.\n",target);//failure
-		return -2; //-1 is legitimate value of some users
+int main(int argc, char *argv){
+	if(argc !=3){
+		printf("Executed command [shift2user] improperly. Correct usage:\n");
+		printf("./shift2user <pid> <uid>");
 	}
-	process_usr_value = *ptr_to_uid;
-	printf("The loginuid of process %d is %d.\n",target,process_usr_value);//success
-	return process_usr_value;
-}
-
-int main(void){
-	int pid;
-	for(pid=1;pid<=10;pid++){
-		int loginuid = getloginuid(pid);
-		if(loginuid != -2) {
-			shift2user(pid,100);
-			shift2user(pid,loginuid);
-		}
-	}
-	return 0;
+	int pid = atoi(argv[1]);
+	int uid = atoi(argv[2]);
+	
+	shift2user(pid,uid);
+	
+	return shift2user(pid,uid);
 }
 
