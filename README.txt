@@ -53,7 +53,8 @@ To enable the module, type:
 
 	$: make
 	$: sudo insmod kernelCode.ko
-	
+	You will need to input your password. After that is done, the LKM is inserted correctly.
+
 When you are done using this module, type the following:
 
 	$: rmmod kernelCode.ko
@@ -85,3 +86,7 @@ To run the [shift2user] command, type:
 ------------------------
 4. Final Testing
 ------------------------
+
+The testing file for the first part of the project can be seen in the proof_that_stuff_works.txt file.
+
+The testing file for the second part can be seen in the terminal_output_for_part_2.txt file.

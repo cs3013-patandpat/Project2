@@ -1,0 +1,27 @@
+The following is the i/o stream from the terminal while testing the shift2user and getloginid programs.
+
+patrick@patrick-VirtualBox:~/Desktop/Project2/Final_Code/user_side$ sleep 100 &
+[1] 9828
+patrick@patrick-VirtualBox:~/Desktop/Project2/Final_Code/user_side$ ./getloginuid 9828
+The loginuid of process 9828 is -1.
+patrick@patrick-VirtualBox:~/Desktop/Project2/Final_Code/user_side$ ./shift2user 9828 1
+You do not have specified permissions. Changing uid of requested pid of pid to 1001.
+Failure. User # 1001 attempted to change the process uid of a different user.
+patrick@patrick-VirtualBox:~/Desktop/Project2/Final_Code/user_side$ ./getloginuid 9828
+The loginuid of process 9828 is -1.
+patrick@patrick-VirtualBox:~/Desktop/Project2/Final_Code/user_side$ sudo ./shift2user 9828 1
+[sudo] password for patrick: 
+Success. Process # 9828 has had its user changed to 1.
+patrick@patrick-VirtualBox:~/Desktop/Project2/Final_Code/user_side$ ./getloginuid 9828
+The loginuid of process 9828 is 1.
+patrick@patrick-VirtualBox:~/Desktop/Project2/Final_Code/user_side$ sudo ./shift2user 9828 1001
+Success. Process # 9828 has had its user changed to 1001.
+patrick@patrick-VirtualBox:~/Desktop/Project2/Final_Code/user_side$ ./getloginuid 9828
+The loginuid of process 9828 is 1001.
+patrick@patrick-VirtualBox:~/Desktop/Project2/Final_Code/user_side$ ./shift2user -20 1000
+You do not have specified permissions. Changing uid of requested pid of pid to 1001.
+process id # -20 could not be found. Ending process.
+patrick@patrick-VirtualBox:~/Desktop/Project2/Final_Code/user_side$ sudo ./shift2user -20 1000
+[sudo] password for patrick: 
+process id # -20 could not be found. Ending process.
+

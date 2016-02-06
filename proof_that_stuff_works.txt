@@ -1,3 +1,5 @@
+The following is a copied section of the syslog file to show that the first part works.
+
 Feb  1 17:30:06 patrick-VirtualBox kernel: [  165.185071] User 1000 is opening file: /home/patrick/Desktop/Project2/finalCode.mod.c
 Feb  1 17:30:06 patrick-VirtualBox kernel: [  165.185926] User 1000 is closing file: 19
 Feb  1 17:30:06 patrick-VirtualBox kernel: [  165.186221] User 1000 is opening file: /home/patrick/Desktop/Project2/Makefile
