@@ -31,6 +31,7 @@ asmlinkage long helper_function2(struct task_struct *task, int t_pid, unsigned s
 		if(this_pid == t_pid){
 			//usr_info = (struct cred*) &(ptr_to_task -> cred);//need to cast this
 			//(usr_info -> uid).val = t_uid;
+			printk("found the bastard");
 			ptr_to_task -> loginuid.val = t_uid;
 			return 0;
 		}
@@ -46,11 +47,14 @@ asmlinkage long helper_function2_alt(struct task_struct *task, int t_pid, unsign
 	struct task_struct* ptr_to_task;
 	int this_pid;
 	int status;
+	printk(KERN_INFO "The process to be found is %d.\n",t_pid);
 
 	list_for_each(list,&task->children){
 		ptr_to_task = list_entry(list,struct task_struct, sibling);
 		this_pid = ptr_to_task -> pid;
+		printk("This process is %d\n.",this_pid);
 		if(this_pid == t_pid){
+			printk("got here.\n");
 			unsigned int process_uid = (ptr_to_task -> loginuid.val);
 			if( process_uid == callee){//make sure the calle uid is the same as the process uid to be altered
 				ptr_to_task -> loginuid.val = t_uid;

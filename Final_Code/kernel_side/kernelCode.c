@@ -5,7 +5,7 @@
 #include <linux/cred.h>
 #include <linux/list.h>
 #include <linux/slab.h>
-#include </usr/src/linux/arch/x86/include/asm/current.h>
+#include <asm/current.h>
 
 unsigned long **sys_call_table;
 
@@ -31,6 +31,7 @@ asmlinkage long helper_function2(struct task_struct *task, int t_pid, unsigned s
 		if(this_pid == t_pid){
 			//usr_info = (struct cred*) &(ptr_to_task -> cred);//need to cast this
 			//(usr_info -> uid).val = t_uid;
+			printk("found the bastard");
 			ptr_to_task -> loginuid.val = t_uid;
 			return 0;
 		}
@@ -46,12 +47,13 @@ asmlinkage long helper_function2_alt(struct task_struct *task, int t_pid, unsign
 	struct task_struct* ptr_to_task;
 	int this_pid;
 	int status;
+	unsigned int process_uid;
 
 	list_for_each(list,&task->children){
 		ptr_to_task = list_entry(list,struct task_struct, sibling);
 		this_pid = ptr_to_task -> pid;
 		if(this_pid == t_pid){
-			unsigned int process_uid = (ptr_to_task -> loginuid.val);
+			process_uid = (ptr_to_task -> loginuid.val);
 			if( process_uid == callee){//make sure the calle uid is the same as the process uid to be altered
 				ptr_to_task -> loginuid.val = t_uid;
 				return 0;
@@ -60,6 +62,7 @@ asmlinkage long helper_function2_alt(struct task_struct *task, int t_pid, unsign
 		status = helper_function2_alt(ptr_to_task,t_pid,t_uid,callee);
 		if(status != -1) return status;
 	}
+	printk(KERN_INFO "returning -1.");
 	return -1;//something went wrong. couldn't find it
 }
 
@@ -82,11 +85,13 @@ asmlinkage long new_sys_cs3013_syscall2(unsigned short *target_pid, unsigned sho
 	callee = current_uid().val;
 	t_pid = *pid_confirm;
 	t_uid = *uid_confirm;
-	if(callee == 0) results = helper_function2(&init_task,t_pid,t_uid);
+	if(callee == 0 || callee == -1) results = helper_function2(&init_task,t_pid,t_uid);
 	else{
 		results = helper_function2_alt(&init_task,t_pid,t_uid,callee);
+		printk("helper reutened %d.\n",results);
 		if(results == -2){
 			printk( KERN_INFO "ERROR. non-root user # %d attempted to change uid of different user.\n", callee);
+		copy_to_user(target_pid,&results,sizeof(target_uid));//send a confirm message to the user
 		return -2;
 		}
 	}
@@ -112,12 +117,13 @@ asmlinkage long helper_function3(struct task_struct *task, int t_pid){
 		ptr_to_task = list_entry(list,struct task_struct, sibling);
 		this_pid = ptr_to_task -> pid;
 		if(this_pid == t_pid){
-			return (ptr_to_task -> loginuid.val);
+			found_uid = (ptr_to_task -> loginuid.val);
+			return found_uid;
 		}
 		found_uid = helper_function3(ptr_to_task,t_pid);
-		if(found_uid < 0) return found_uid;//HERES JOHNEY
+		if(found_uid >= -1) return found_uid;//HERES JOHNEY
 	}
-	return -1;//unfound
+	return -2;//unfound
 }
 
 asmlinkage long new_sys_cs3013_syscall3(unsigned short *target_pid, unsigned short *actual_uid) {
@@ -131,14 +137,16 @@ asmlinkage long new_sys_cs3013_syscall3(unsigned short *target_pid, unsigned sho
 	if(copy_from_user(pid_confirm, target_pid, sizeof(unsigned short))) return EFAULT;
 
 	t_pid = *pid_confirm;
+	printk(KERN_INFO "data to be gathered is on %d.\n",t_pid);
 	result = helper_function3(&init_task,t_pid);
-	if(result > 0){
+	printk(KERN_INFO "uid found to be %d.\n",result);
+	if(result >= -1){
 		printk(KERN_INFO "success! the uid of process %d was found to be %d\n",t_pid,result);
 		copy_to_user(actual_uid,&result,sizeof(int));//send a confirm message to the user
 		return 0;//we got him
 	}else{
 		printk(KERN_INFO "ERROR: pid could not be found\n");
-		copy_to_user(target_pid,&failure,sizeof(int));//send a failure message to the user
+		copy_to_user(actual_uid,&failure,sizeof(int));//send a failure message to the user
 		return -1;//something went wrong. the pid couldn't be found
 	}
 
